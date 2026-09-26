@@ -148,6 +148,12 @@ onMouseDown(() => {
         // Something already selected
         selection.item.pos = mousePos().add(selection.offset);
 
+        // Check if out of bounds & move back in
+        if (selection.item.pos.x < 0) { selection.item.pos.x = 0; debug.log('a') }
+        if (selection.item.pos.y < 0) { selection.item.pos.y = 0; debug.log('b') }
+        if (selection.item.pos.x > width()) { selection.item.pos.x = width(); debug.log('c') }
+        if (selection.item.pos.y > height()) { selection.item.pos.y = height(); debug.log('d') }
+
     } else {
         // Nothing selected yet
         let draggableItems = get('draggable');
@@ -189,7 +195,15 @@ onUpdate(() => {
 })
 
 onMouseRelease(() => {
-    selection.active = false;
+    if (selection.active) {
+        if (selection.item.pos.x > width() - 200) {
+            // Deletion range
+            destroy(selection.item)
+            selection.item = null;
+        }
+
+        selection.active = false;
+    }
 })
 
 
