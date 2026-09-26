@@ -11,17 +11,17 @@ let selection = {
 }
 
 const referencePear = add([
-    sprite('pear'),
+    sprite('pear_base'),
     pos(center().sub(450, 0)),
     scale(0.6),
     anchor('center')
 ])
 
 const thePear = add([
-    sprite('pear'),
+    sprite('pear_base'),
     pos(center().add(80, 0)),
-    scale(550/500),
-    anchor('center')
+    anchor('center'),
+    color(167, 208, 37)
 ])
 
 referencePear.add([
@@ -48,7 +48,7 @@ add([
     rect(180, height()),
     pos(width(), 0),
     anchor('topright'),
-    color(BLUE)
+    color(rgb(90,90,120))
 ])
 
 // Slots
@@ -57,7 +57,7 @@ for (let i = 0; i < 5; i++) {
         rect(132, 132),
         pos(width()-38, 10 + i*142),
         anchor('topright'),
-        color(BLACK),
+        color(rgb(50,50,60)),
         area(),
         "accessory_slot",
         { slotID: i },
@@ -83,11 +83,12 @@ function updateSlots() {
         let slotData = ACCESSORIES[currentTab].content[s.slotID];
 
         if (slotData) {
+            let offset = 132/2;
             add([
                 sprite(slotData.sprite),
-                pos(s.pos),
-                anchor('topright'),
-                scale(0.2),
+                pos(s.pos.add(-offset, offset)),
+                anchor('center'),
+                scale(0.4),
                 "accessory_icon",
             ])
         }
@@ -98,9 +99,9 @@ function updateSlots() {
 function updateTabs() {
     get('accessory_tab').forEach((t) => {
         if (currentTab == t.tabID) {
-            t.color = RED;
+            t.color = rgb(90,90,120);
         } else {
-            t.color = rgb(160,0,0);
+            t.color = rgb(50,50,60);
         }
     })
 }
@@ -117,6 +118,7 @@ onClick('accessory_tab', (t) => {
 
 updateAccessoryMenu();
 
+// Get item from the accessory menu
 onClick('accessory_slot', (s) => {
     let slotData = ACCESSORIES[currentTab].content[s.slotID];
 
@@ -124,8 +126,9 @@ onClick('accessory_slot', (s) => {
         let item = add([
             sprite(slotData.sprite),
             pos(mousePos()),
-            area(),
+            area({scale: (slotData.areaScale ? slotData.areaScale : 1)}),
             anchor('center'),
+            scale(slotData.scale ? slotData.scale : 1),
             "draggable",
             "selected"
         ])
