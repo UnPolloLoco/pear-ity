@@ -32,23 +32,14 @@ referencePear.add([
     anchor('center')
 ])
 
-thePear.add([
-    sprite('thing'),
-    scale(0.5),
-])
-referencePear.add([
-    sprite('thing'),
-    scale(0.5),
-])
-
 // ----- Accessory menu -----
 
-// Main background
+// Menu background
 add([
     rect(180, height()),
     pos(width(), 0),
     anchor('topright'),
-    color(rgb(90,90,120))
+    color(rgb(100,100,130))
 ])
 
 // Slots
@@ -99,7 +90,7 @@ function updateSlots() {
 function updateTabs() {
     get('accessory_tab').forEach((t) => {
         if (currentTab == t.tabID) {
-            t.color = rgb(90,90,120);
+            t.color = rgb(100,100,130);
         } else {
             t.color = rgb(50,50,60);
         }
@@ -187,16 +178,6 @@ onMouseDown(() => {
     }
 })
 
-onUpdate(() => {
-    get('draggable').forEach((d) => {
-        if (d.is('selected')) {
-            d.use(color(BLACK))
-        } else {
-            d.unuse('color')
-        }  
-    })
-})
-
 onMouseRelease(() => {
     if (selection.active) {
         if (selection.item.pos.x > width() - 200) {
@@ -209,6 +190,60 @@ onMouseRelease(() => {
     }
 })
 
+onKeyPress('up', () => {
+    if (selection.item) {
+        selection.item.scaleBy(1.05)
+        if (0.15 > selection.item.scale.x || selection.item.scale.x > 3) {
+            selection.item.scaleBy(1 / 1.05)
+        }
+    }
+})
+onKeyPress('down', () => {
+    if (selection.item) {
+        selection.item.scaleBy(1 / 1.05)
+        if (0.15 > selection.item.scale.x || selection.item.scale.x > 3) { 
+            selection.item.scaleBy(1.05)
+        }
+    }
+})
+onKeyPress('left', () => {
+    if (selection.item) {
+        selection.item.flipX = !selection.item.flipX
+    }
+})
+onKeyPress('right', () => {
+    if (selection.item) {
+        selection.item.flipY = !selection.item.flipY
+    }
+})
+
+const selectionOutline = add([
+    rect(0,0, {fill:false}),
+    pos(0,0),
+    outline(3, rgb(0,255,255)),
+    opacity(0),
+    z(999)
+])
+
+onUpdate(() => {
+    let isSomethingSelected = false;
+
+    get('draggable').forEach((d) => {
+        if (d.is('selected')) {
+            isSomethingSelected = true;
+            bbox = d.worldBbox();
+
+            selectionOutline.opacity = 1;
+            selectionOutline.pos = bbox.pos;
+            selectionOutline.width = bbox.width;
+            selectionOutline.height = bbox.height;
+        }   
+    })
+
+    if (isSomethingSelected == false) {
+        selectionOutline.opacity = 0;
+    }
+})
 
 
 // -- End of scene --
