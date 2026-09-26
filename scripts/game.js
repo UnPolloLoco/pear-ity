@@ -130,25 +130,35 @@ updateAccessoryMenu();
 // Get item from the accessory menu
 onClick('accessory_slot', (s) => {
     let slotData = ACCESSORIES[currentTab].content[s.slotID];
+    let category = ACCESSORIES[currentTab].category;
 
     if (slotData) {
-        let item = add([
-            sprite(slotData.sprite),
-            pos(mousePos()),
-            area({scale: (slotData.areaScale ? slotData.areaScale : 1)}),
-            anchor('center'),
-            scale(slotData.scale ? slotData.scale : 1),
-            "draggable",
-            "selected"
-        ])
-    
-        // copied code
-        if (selection.item) { selection.item.untag('selected') }
-        item.tag('selected');
-    
-        selection.item = item;
-        selection.active = true;
-        selection.offset = item.pos.sub(mousePos())
+        if (category == 'colors') {
+            // Set color
+
+            thePear.color = slotData.color;
+        } else {
+
+            // Normal draggable item
+
+            let item = add([
+                sprite(slotData.sprite),
+                pos(mousePos()),
+                area({scale: (slotData.areaScale ? slotData.areaScale : 1)}),
+                anchor('center'),
+                scale(slotData.scale ? slotData.scale : 1),
+                "draggable",
+                "selected"
+            ])
+        
+            // copied code
+            if (selection.item) { selection.item.untag('selected') }
+            item.tag('selected');
+        
+            selection.item = item;
+            selection.active = true;
+            selection.offset = item.pos.sub(mousePos())
+        }
     }
 
 })
