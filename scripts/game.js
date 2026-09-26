@@ -57,6 +57,7 @@ for (let i = 0; i < 5; i++) {
 
 // Tabs
 for (let i = 0; i < ACCESSORIES.length; i++) {
+    // Rect
     add([
         rect(60, 90),
         pos(width()-180, 10 + i*100),
@@ -66,22 +67,39 @@ for (let i = 0; i < ACCESSORIES.length; i++) {
         "accessory_tab",
         { tabID: i },
     ])
+
+    // Label
+    add([
+        text(ACCESSORIES[i].category, {align: 'center', size: 20, width: 90}),
+        pos(width()-180-15, 10 + i*100),
+        anchor('botright'),
+        color(WHITE),
+        rotate(-90)
+    ])
 }
 
 function updateSlots() {
     destroyAll('accessory_icon');
     get('accessory_slot').forEach((s) => {
         let slotData = ACCESSORIES[currentTab].content[s.slotID];
+        let category = ACCESSORIES[currentTab].category;
 
         if (slotData) {
             let offset = 132/2;
-            add([
-                sprite(slotData.sprite),
+            let spriteInput = (category == 'colors') ? 'splatter' : slotData.sprite;
+            let scaleInput = (category == 'colors') ? 1 : 0.4;
+
+            let icon = add([
+                sprite(spriteInput),
                 pos(s.pos.add(-offset, offset)),
                 anchor('center'),
-                scale(0.4),
+                scale(scaleInput),
                 "accessory_icon",
             ])
+        
+            if (category == 'colors') {
+                icon.use(color(slotData.color))
+            }
         }
 
     })

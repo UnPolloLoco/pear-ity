@@ -45,6 +45,7 @@ loadSpriteAtlas('mouths2.png', {
 })
 
 loadSprite('pear_base', 'pear_base.png')
+loadSprite('splatter', 'splatter.png')
 
 const ACCESSORIES = [
     {
