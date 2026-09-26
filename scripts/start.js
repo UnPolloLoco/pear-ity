@@ -19,3 +19,21 @@ loadRoot('https://unpolloloco.github.io/pear-ity/sprites/');
 
 loadSprite('pear', 'pear.png')
 loadSprite('thing', 'thing.png')
+
+const ACCESSORIES = [
+    {
+        category: 'eyes',
+        content: [
+            {sprite: 'thing'},
+            {sprite: 'pear'},
+        ]
+    },
+    {
+        category: 'hats',
+        content: [
+            {sprite: 'pear'},
+            {sprite: 'thing'},
+            {sprite: 'thing'},
+        ]
+    },
+]
