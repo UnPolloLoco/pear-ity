@@ -58,6 +58,7 @@ for (let i = 0; i < 5; i++) {
         pos(width()-38, 10 + i*142),
         anchor('topright'),
         color(BLACK),
+        area(),
         "accessory_slot",
         { slotID: i },
     ])
@@ -116,26 +117,31 @@ onClick('accessory_tab', (t) => {
 
 updateAccessoryMenu();
 
+onClick('accessory_slot', (s) => {
+    let slotData = ACCESSORIES[currentTab].content[s.slotID];
+
+    if (slotData) {
+        let item = add([
+            sprite(slotData.sprite),
+            pos(mousePos()),
+            area(),
+            anchor('center'),
+            "draggable",
+            "selected"
+        ])
+    
+        // copied code
+        if (selection.item) { selection.item.untag('selected') }
+        item.tag('selected');
+    
+        selection.item = item;
+        selection.active = true;
+        selection.offset = item.pos.sub(mousePos())
+    }
+
+})
 
 
-
-add([
-    sprite('pear'),
-    pos(100,100),
-    color(RED),
-    area(),
-    anchor('center'),
-    "draggable",
-])
-
-add([
-    sprite('thing'),
-    pos(100,100),
-    color(RED),
-    area(),
-    anchor('center'),
-    "draggable",
-])
 
 onMouseDown(() => {
     if (selection.active == true) {
@@ -151,6 +157,7 @@ onMouseDown(() => {
 
             if (item.isHovering()) {
                 // Successful selection
+                // copied code
                 if (selection.item) { selection.item.untag('selected') }
                 item.tag('selected');
 
@@ -164,6 +171,7 @@ onMouseDown(() => {
 
         // If you click outside of an object, deselect
         if (!selection.active) {
+            // copied code
             if (selection.item) { selection.item.untag('selected') }
             selection.item = null;
         }
