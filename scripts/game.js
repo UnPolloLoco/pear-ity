@@ -4,6 +4,12 @@ makeBackground();
 
 let currentTab = 0;
 
+let selection = {
+    item: null,
+    active: false,
+    offset: vec2(0),
+}
+
 const referencePear = add([
     sprite('pear'),
     pos(center().sub(450, 0)),
@@ -13,7 +19,7 @@ const referencePear = add([
 
 const thePear = add([
     sprite('pear'),
-    pos(center().add(50, 0)),
+    pos(center().add(80, 0)),
     scale(550/500),
     anchor('center')
 ])
@@ -27,27 +33,29 @@ referencePear.add([
 ])
 
 thePear.add([
-    sprite('thing')
+    sprite('thing'),
+    scale(0.5),
 ])
 referencePear.add([
-    sprite('thing')
+    sprite('thing'),
+    scale(0.5),
 ])
 
 // ----- Accessory menu -----
 
 // Main background
 add([
-    rect(187.5, height()),
+    rect(180, height()),
     pos(width(), 0),
     anchor('topright'),
     color(BLUE)
 ])
 
 // Slots
-for (let i = 0; i < 4; i++) {
+for (let i = 0; i < 5; i++) {
     add([
-        rect(167.5, 167.5),
-        pos(width()-10, 10 + i*177.5),
+        rect(132, 132),
+        pos(width()-38, 10 + i*142),
         anchor('topright'),
         color(BLACK),
         "accessory_slot",
@@ -59,7 +67,7 @@ for (let i = 0; i < 4; i++) {
 for (let i = 0; i < ACCESSORIES.length; i++) {
     add([
         rect(60, 90),
-        pos(width()-187.5, 10 + i*100),
+        pos(width()-180, 10 + i*100),
         anchor('topright'),
         color(RED),
         area(),
@@ -107,6 +115,76 @@ onClick('accessory_tab', (t) => {
 })
 
 updateAccessoryMenu();
+
+
+
+
+add([
+    sprite('pear'),
+    pos(100,100),
+    color(RED),
+    area(),
+    anchor('center'),
+    "draggable",
+])
+
+add([
+    sprite('thing'),
+    pos(100,100),
+    color(RED),
+    area(),
+    anchor('center'),
+    "draggable",
+])
+
+onMouseDown(() => {
+    if (selection.active == true) {
+        // Something already selected
+        selection.item.pos = mousePos().add(selection.offset);
+
+    } else {
+        // Nothing selected yet
+        let draggableItems = get('draggable');
+
+        for (let i = 0; i < draggableItems.length; i++) {
+            let item = draggableItems[i];
+
+            if (item.isHovering()) {
+                // Successful selection
+                if (selection.item) { selection.item.untag('selected') }
+                item.tag('selected');
+
+                selection.item = item;
+                selection.active = true;
+                selection.offset = item.pos.sub(mousePos())
+
+                break
+            }
+        }
+
+        // If you click outside of an object, deselect
+        if (!selection.active) {
+            if (selection.item) { selection.item.untag('selected') }
+            selection.item = null;
+        }
+    }
+})
+
+onUpdate(() => {
+    get('draggable').forEach((d) => {
+        if (d.is('selected')) {
+            d.use(color(BLACK))
+        } else {
+            d.unuse('color')
+        }  
+    })
+})
+
+onMouseRelease(() => {
+    selection.active = false;
+})
+
+
 
 // -- End of scene --
 })

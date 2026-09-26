@@ -25,15 +25,15 @@ const ACCESSORIES = [
         category: 'eyes',
         content: [
             {sprite: 'thing'},
-            {sprite: 'pear'},
+            // {sprite: 'pear'},
         ]
     },
     {
         category: 'hats',
         content: [
             {sprite: 'pear'},
-            {sprite: 'thing'},
-            {sprite: 'thing'},
+            // {sprite: 'thing'},
+            // {sprite: 'thing'},
         ]
     },
 ]
