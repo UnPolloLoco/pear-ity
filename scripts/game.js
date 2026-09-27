@@ -34,6 +34,72 @@ referencePear.add([
 
 // ----- Accessory menu -----
 
+function buildAccessoryList(tag = 'draggable') {
+    let accessories = get(tag, { recursive: true });
+    let list = [];
+
+    // Add color component first
+    list.push({color: thePear.color})
+
+    // Add the rest
+    for (let i = 0; i < accessories.length; i++) {
+        let a = accessories[i];
+        let inputPos;
+
+        if (tag == 'draggable') { inputPos = a.pos.sub(thePear.pos) }
+        if (tag == 'reference') { inputPos = a.pos }
+
+        list.push({
+            sprite:  a.sprite,
+            pos:     inputPos, // make pos relative to pear
+            scale:   a.scale,
+            flipX:   a.flipX,
+            flipY:   a.flipY,
+        })
+    }
+
+    list = structuredClone(list);
+    return list;
+}
+
+function useAccessoryList(list) {
+    get("reference", { recursive: true }).forEach((ref) => destroy(ref)); // destroyAll doesnt work >:(((
+
+    for (let i = 0; i < list.length; i++) {
+        let part = list[i];
+
+        if (part.color) {
+            // Color part
+            referencePear.color = part.color;
+        } else {
+            // All other parts
+            referencePear.add([
+                sprite(part.sprite, {
+                    flipX: part.flipX, 
+                    flipY: part.flipY
+                }),
+                pos(part.pos.x, part.pos.y),
+                scale(part.scale.x, part.scale.y),
+                anchor('center'),
+                "reference"
+            ])
+        }
+    }
+}
+
+// let triple_t;
+// onKeyPress('a', ()=>{ triple_t = buildAccessoryList() })
+// onKeyPress('b', ()=>{useAccessoryList(triple_t)})
+
+// onKeyPress('c', ()=>{
+//     console.log('REFERENCE:')
+//     console.log(buildAccessoryList('reference'));
+
+//     console.log(' ')
+//     console.log('NORMAL:')
+//     console.log(buildAccessoryList())
+// })
+
 // Menu background
 add([
     rect(180, height()),
