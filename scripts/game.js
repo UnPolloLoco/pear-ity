@@ -212,7 +212,7 @@ onMouseDown(() => {
 onMouseRelease(() => {
     if (selection.active) {
         if (selection.item.pos.x > width() - 200) {
-            // Deletion range
+            // Deletion range (copied code)
             destroy(selection.item)
             selection.item = null;
         }
@@ -253,6 +253,15 @@ onKeyPress('space', () => {
         selection.item.scale = selection.item.defaultScale;
         selection.item.flipX = false;
         selection.item.flipY = false;
+    }
+})
+
+onKeyPress('backspace', () => {
+    if (selection.item) {
+        // copied code
+        destroy(selection.item)
+        selection.item = null;
+        selection.active = false;
     }
 })
 
