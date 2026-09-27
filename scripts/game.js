@@ -24,13 +24,159 @@ const thePear = add([
     color(167, 208, 37)
 ])
 
-referencePear.add([
-    rect(450, 550),
-    pos(0,0),
+// Glass thing
+add([
+    rect(280, 360),
+    pos(referencePear.pos),
     color(WHITE),
-    opacity(0.2),
+    opacity(0.1),
     anchor('center')
 ])
+
+const checkButton = add([
+    rect(280, 100),
+    pos(referencePear.pos.add(0, 250)),
+    color(GREEN),
+    anchor('center'),
+    area()
+])
+
+checkButton.onClick(() => {
+    let guess = buildAccessoryList();
+    let target = structuredClone(referenceAccessories);
+
+    console.log('GUESS')
+    console.log(guess);
+    console.log('TARGET')
+    console.log(target);
+    console.log('');
+
+    let score = 0; // every part can add from 0.0 to 1.0 depending on how correct it is
+    let maxScore = 0; // every part adds 1.0 to this
+
+    // First, compare colors
+    maxScore += 1
+
+    let gc = guess[0].color;
+    let tc = target[0].color;
+    if (gc.r == tc.r && gc.g == tc.g && gc.b == tc.b) {
+        score += 1
+    }
+
+    // Remove colors from lists
+    guess.shift();
+    target.shift();
+
+    // Loop through all non-colors
+    for (let gPart of guess) {
+        let matchingIndices = [];
+        maxScore += 1
+
+        // Find all parts with a matching sprite
+        for (let [index, tPart] of target.entries()) {
+            if (gPart.sprite == tPart.sprite) {
+                matchingIndices.push(index);
+            }
+        }
+
+        // If no matches, continue
+        if (matchingIndices.length == 0) { continue }
+
+        // Find the CLOSEST part with a matching sprite
+        let smallestDist = 99999;
+        let smallestDistIndex = null;
+        for (let index of matchingIndices) {
+            tPart = target[index];
+            let dist = Math.sqrt(
+                (gPart.pos.x - tPart.pos.x)**2 
+                + (gPart.pos.y - tPart.pos.y)**2
+            );
+            if (dist < smallestDist) {
+                smallestDist = dist;
+                smallestDistIndex = index;
+            }
+        }
+
+        // Get a best match between a Guess and Target part
+        let bestMatch = target[smallestDistIndex];
+        console.log('-------------')
+        console.log(gPart)
+        console.log(bestMatch)
+        console.log(smallestDist)
+        console.log('-------------')
+
+        // a few scores for this one part, which will be averaged for the part's overall score
+        let subScores = [];
+
+        // ---- POSITION ACCURACY SCORE ----
+
+        let dist = smallestDist;
+        let normDist = mapc(
+            dist,
+            5, 60, // convert 5-60 to 0-1, where 1 is too far and 0 is perfect
+            0, 1,
+        );
+
+        subScores.push(1 - normDist); // invert normDist since 0 is perfect
+
+        // ---- SCALE ACCURACY SCORE ----
+
+        // only compare x part of scale for simplicity
+        let gScale = gPart.scale.x;
+        let tScale = bestMatch.scale.x;
+
+        let rawRatio = gScale / tScale;
+        let normRatio; // always less than one (1/3 -> 1/3, but 3 -> 1/3 too)
+
+        if (rawRatio > 1) { normRatio = 1 / rawRatio }
+        else { normRatio = rawRatio }
+
+        // Add a small amount for a deadzone around target value (1)
+        normRatio = Math.min(1, normRatio+0.05)
+
+        extremeRatio = normRatio ** 4; // ^4 so that worse values are punished more
+
+        subScores.push(extremeRatio)
+
+        // ---- FLIP ACCURACY SCORE ----
+
+        let goodFlipX = (gPart.flipX == bestMatch.flipX);
+        let goodFlipY = (gPart.flipY == bestMatch.flipY);
+
+        if (goodFlipX && goodFlipY) {
+            // Both match!!
+            subScores.push(1);
+        } else if (goodFlipX || goodFlipY) {
+            // Only one matches
+            subScores.push(0.25);
+        } else {
+            // None match :((
+            subScores.push(0);
+        }
+
+        // --- Average out subscores ---
+        //                 pos: 2x          scale: 2x        flips: 1x
+        let weighted_sum = 2*subScores[0] + 2*subScores[1] + subScores[2];
+        let avg = weighted_sum / 5;
+
+        score += avg;
+        console.log(subScores)
+
+        // -- Final penalties --
+
+        // Reduce score if guess and target don't have the same amount of parts
+        let lengthDifference = Math.abs(guess.length - target.length);
+        maxScore += lengthDifference;
+
+    }
+
+    console.log(`${score} / ${maxScore}`)
+    console.log(score/maxScore * 100)
+})
+
+
+let referenceAccessories = [{"color":{"r":187,"g":167,"b":33}},{"sprite":"eye1","pos":{"x":109.0783807062877,"y":-14.332472006890612},"scale":{"x":1,"y":1},"flipX":true,"flipY":false},{"sprite":"eye1","pos":{"x":-115.83118001722653,"y":-9.922480620155056},"scale":{"x":0.5,"y":0.5},"flipX":true,"flipY":false},{"sprite":"mouth2","pos":{"x":-8.888888888888914,"y":24.254952627045668},"scale":{"x":1,"y":1},"flipX":false,"flipY":false}]
+useAccessoryList(referenceAccessories)
 
 // ----- Accessory menu -----
 
@@ -88,7 +234,10 @@ function useAccessoryList(list) {
 }
 
 // let triple_t;
-// onKeyPress('a', ()=>{ triple_t = buildAccessoryList() })
+onKeyPress('a', ()=>{ 
+    triple_t = buildAccessoryList(); 
+    console.log(JSON.stringify(triple_t))
+})
 // onKeyPress('b', ()=>{useAccessoryList(triple_t)})
 
 // onKeyPress('c', ()=>{
