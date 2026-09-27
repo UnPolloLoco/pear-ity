@@ -238,7 +238,7 @@ onClick(() => {
         canLeaveScoring = false;
         scoreUI.hidden = true;
 
-        if (scoreSuccess) alert('yay');
+        if (scoreSuccess) getNewReference();
         scoreSuccess = false;
     }
 })
@@ -299,16 +299,21 @@ const scoreContinueHint = scoreUI.add([
 
 // ----- Get reference -----
 
-const PRESET_REFERENCES = [
-    [{"color":{"r":187,"g":167,"b":33}},{"sprite":"eye1","pos":{"x":109.0783807062877,"y":-14.332472006890612},"scale":{"x":1,"y":1},"flipX":true,"flipY":false},{"sprite":"eye1","pos":{"x":-115.83118001722653,"y":-9.922480620155056},"scale":{"x":0.5,"y":0.5},"flipX":true,"flipY":false},{"sprite":"mouth2","pos":{"x":-8.888888888888914,"y":24.254952627045668},"scale":{"x":1,"y":1},"flipX":false,"flipY":false}],
-]
-
 function getNewReference() {
-    
+    whichReference++;
+    referenceAccessories = PRESET_REFERENCES[whichReference % PRESET_REFERENCES.length];
+    useAccessoryList(referenceAccessories)
+    clearAccessories();
 }
 
-let whichReference = 0;
-let referenceAccessories = PRESET_REFERENCES[whichReference % PRESET_REFERENCES.length];
+function clearAccessories() {
+    destroyAll('draggable');
+}
+
+let whichReference = -1;
+let referenceAccessories;
+
+getNewReference();
 useAccessoryList(referenceAccessories)
 
 // ----- Accessory menu -----
@@ -475,6 +480,25 @@ onClick('accessory_tab', (t) => {
 })
 
 updateAccessoryMenu();
+
+// Clear button
+
+const deleteAccessories = add([
+    rect(60,60),
+    color(RED),
+    pos(width()-190, height()-10),
+    anchor('botright'),
+    area()
+])
+
+deleteAccessories.add([
+    text('X', {align:'left'}),
+    color(BLACK),
+    anchor('botright'),
+    pos(-20,-10)
+])
+
+deleteAccessories.onClick(() => { clearAccessories(); })
 
 // Get item from the accessory menu
 onClick('accessory_slot', (s) => {
