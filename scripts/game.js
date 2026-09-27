@@ -400,6 +400,15 @@ add([
     opacity(0.5)
 ])
 
+// Guide
+add([
+    text('Use arrow keys to edit a selected item', {size: 25}),
+    pos(45,130),
+    color(rgb(180,180,220)),
+    scale(0.8, 1),
+    opacity(0.5)
+])
+
 // Menu background
 add([
     rect(180, height()),
