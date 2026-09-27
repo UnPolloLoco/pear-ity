@@ -14,7 +14,8 @@ const referencePear = add([
     sprite('pear_base'),
     pos(center().sub(450, 0)),
     scale(0.6),
-    anchor('center')
+    anchor('center'),
+    z(-3),
 ])
 
 const thePear = add([
@@ -29,16 +30,31 @@ add([
     rect(280, 360),
     pos(referencePear.pos),
     color(WHITE),
-    opacity(0.1),
-    anchor('center')
+    opacity(0.15),
+    anchor('center'),
+    z(-1),
 ])
 
 const checkButton = add([
     rect(280, 100),
     pos(referencePear.pos.add(0, 250)),
-    color(GREEN),
+    color(rgb(30,140,40)),
     anchor('center'),
     area()
+])
+
+checkButton.add([
+    rect(280, 50),
+    pos(0,0),
+    color(rgb(20,120,30)),
+    anchor('top'),
+])
+
+checkButton.add([
+    text('CHECK', {align: 'center'}),
+    pos(0,0),
+    color(WHITE),
+    anchor('center')
 ])
 
 checkButton.onClick(() => {
@@ -227,6 +243,7 @@ function useAccessoryList(list) {
                 pos(part.pos.x, part.pos.y),
                 scale(part.scale.x, part.scale.y),
                 anchor('center'),
+                z(-2),
                 "reference"
             ])
         }

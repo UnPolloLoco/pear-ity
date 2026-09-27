@@ -9,7 +9,8 @@ function makeBackground() {
         rect(width(), height()),
         pos(0,0),
         fixed(),
-        color(rgb(30,30,40))
+        color(rgb(30,30,40)),
+        z(-999)
     ])
 }
 
