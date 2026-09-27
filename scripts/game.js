@@ -314,7 +314,8 @@ let whichReference = -1;
 let referenceAccessories;
 
 getNewReference();
-useAccessoryList(referenceAccessories)
+
+onKeyPress('h', getNewReference)
 
 // ----- Accessory menu -----
 
