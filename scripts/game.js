@@ -135,20 +135,23 @@ onClick('accessory_slot', (s) => {
     if (slotData) {
         if (category == 'colors') {
             // Set color
-
             thePear.color = slotData.color;
+
         } else {
 
             // Normal draggable item
+
+            let scaleInput = slotData.scale ? slotData.scale : 1
 
             let item = add([
                 sprite(slotData.sprite),
                 pos(mousePos()),
                 area({scale: (slotData.areaScale ? slotData.areaScale : 1)}),
                 anchor('center'),
-                scale(slotData.scale ? slotData.scale : 1),
+                scale(scaleInput),
                 "draggable",
-                "selected"
+                "selected",
+                { defaultScale: vec2(scaleInput) }
             ])
         
             // copied code
@@ -245,6 +248,14 @@ onKeyPress('right', () => {
     }
 })
 
+onKeyPress('space', () => {
+    if (selection.item) {
+        selection.item.scale = selection.item.defaultScale;
+        selection.item.flipX = false;
+        selection.item.flipY = false;
+    }
+})
+
 const selectionOutline = add([
     rect(0,0, {fill:false}),
     pos(0,0),
@@ -265,6 +276,14 @@ onUpdate(() => {
             selectionOutline.pos = bbox.pos;
             selectionOutline.width = bbox.width;
             selectionOutline.height = bbox.height;
+
+            if (selection.item.pos.x > width() - 200) {
+                // In deletion range (copied code)
+                selectionOutline.outline.color = RED;
+            } else {
+                // normal
+                selectionOutline.outline.color = rgb(0,255,255);
+            }
         }   
     })
 
