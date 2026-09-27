@@ -315,7 +315,7 @@ let referenceAccessories;
 
 getNewReference();
 
-onKeyPress('h', getNewReference)
+// onKeyPress('h', getNewReference)
 
 // ----- Accessory menu -----
 
@@ -388,6 +388,17 @@ onKeyPress('a', ()=>{
 //     console.log('NORMAL:')
 //     console.log(buildAccessoryList())
 // })
+
+
+// Title
+
+add([
+    text('PEAR-ITY', {size: 100}),
+    pos(40,40),
+    color(rgb(180,180,220)),
+    scale(0.8, 1),
+    opacity(0.5)
+])
 
 // Menu background
 add([
@@ -500,6 +511,8 @@ deleteAccessories.add([
 ])
 
 deleteAccessories.onClick(() => { clearAccessories(); })
+
+
 
 // Get item from the accessory menu
 onClick('accessory_slot', (s) => {
