@@ -3,6 +3,9 @@ scene("game", () => {
 makeBackground();
 
 let currentTab = 0;
+let isScoring = false;
+let canLeaveScoring = false;
+let scoreSuccess = false;
 
 let selection = {
     item: null,
@@ -58,6 +61,8 @@ checkButton.add([
 ])
 
 checkButton.onClick(() => {
+    if (isScoring) return;
+
     let guess = buildAccessoryList();
     let target = structuredClone(referenceAccessories);
 
@@ -188,10 +193,122 @@ checkButton.onClick(() => {
 
     console.log(`${score} / ${maxScore}`)
     console.log(score/maxScore * 100)
+
+    let percentage = (score/maxScore * 100);
+
+    // --- UI MAGIC ---
+
+    isScoring = true;
+    scoreContinueHint.opacity = 0;
+    scoreUI.hidden = false;
+
+    scoreText.text = 'Scoring';
+    scoreText.color = rgb(180,180,180);
+    scoreDescription.text = '';
+
+    for (let i = 0; i < 3; i++) {
+        wait(0.4*i, () => {
+            scoreText.text += '.';
+        })
+    }
+
+    wait(1.6, () => {
+        scoreText.text = `${percentage.toFixed(1)}%`;
+
+        if (percentage >= 90) {
+            scoreText.color = GREEN;
+            scoreDescription.color = rgb(0,180,0);
+            scoreDescription.text = 'PEAR-ITY!!';
+            scoreSuccess = true;
+        } else {
+            scoreText.color = RED;
+            scoreDescription.color = rgb(180,0,0);
+            scoreDescription.text = 'not a pear-ity.';
+            scoreSuccess = false;
+        }
+
+        canLeaveScoring = true;
+        scoreContinueHint.opacity = 1;
+    })
 })
 
+onClick(() => {
+    if (canLeaveScoring) {
+        isScoring = false;
+        canLeaveScoring = false;
+        scoreUI.hidden = true;
 
-let referenceAccessories = [{"color":{"r":187,"g":167,"b":33}},{"sprite":"eye1","pos":{"x":109.0783807062877,"y":-14.332472006890612},"scale":{"x":1,"y":1},"flipX":true,"flipY":false},{"sprite":"eye1","pos":{"x":-115.83118001722653,"y":-9.922480620155056},"scale":{"x":0.5,"y":0.5},"flipX":true,"flipY":false},{"sprite":"mouth2","pos":{"x":-8.888888888888914,"y":24.254952627045668},"scale":{"x":1,"y":1},"flipX":false,"flipY":false}]
+        if (scoreSuccess) alert('yay');
+        scoreSuccess = false;
+    }
+})
+
+// ----- Score UI -----
+
+const scoreUI = add([pos(0), opacity(1)]);
+scoreUI.hidden = true;
+
+// Fade
+scoreUI.add([
+    rect(width(), height()),
+    pos(center()),
+    color(BLACK),
+    anchor('center'),
+    z(999),
+    opacity(0.5)
+])
+
+
+// Banner
+scoreUI.add([
+    rect(width(), 200),
+    pos(center()),
+    color(BLACK),
+    anchor('center'),
+    z(1000),
+])
+
+// Score report
+const scoreText = scoreUI.add([
+    text('', {size: 80, align:'center'}),
+    pos(center().sub(0, 30)),
+    color(GREEN),
+    anchor('center'),
+    z(1001),
+])
+
+// Score description
+const scoreDescription = scoreUI.add([
+    text('', {size: 40, align:'center'}),
+    pos(center().add(0, 40)),
+    color(rgb(0,200,0)),
+    anchor('center'),
+    z(1001),
+])
+
+// Score UI continue hint
+const scoreContinueHint = scoreUI.add([
+    text('Click to continue', {size: 25, align:'center'}),
+    pos(center().add(0, 150)),
+    color(rgb(200,200,200)),
+    anchor('center'),
+    z(1001),
+    opacity(0),
+])
+
+
+// ----- Get reference -----
+
+const PRESET_REFERENCES = [
+    [{"color":{"r":187,"g":167,"b":33}},{"sprite":"eye1","pos":{"x":109.0783807062877,"y":-14.332472006890612},"scale":{"x":1,"y":1},"flipX":true,"flipY":false},{"sprite":"eye1","pos":{"x":-115.83118001722653,"y":-9.922480620155056},"scale":{"x":0.5,"y":0.5},"flipX":true,"flipY":false},{"sprite":"mouth2","pos":{"x":-8.888888888888914,"y":24.254952627045668},"scale":{"x":1,"y":1},"flipX":false,"flipY":false}],
+]
+
+function getNewReference() {
+    
+}
+
+let whichReference = 0;
+let referenceAccessories = PRESET_REFERENCES[whichReference % PRESET_REFERENCES.length];
 useAccessoryList(referenceAccessories)
 
 // ----- Accessory menu -----
